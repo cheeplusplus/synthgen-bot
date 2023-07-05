@@ -35,7 +35,7 @@ async def on_message(message):
     if isinstance(message.channel, discord.TextChannel) and client.user.mentioned_in(message):
         # User mentioned us, create a thread with our reply
         new_thread = True
-        response_thread = await message.create_thread(name="ChatGPT", auto_archive_duration=60, reason="ChatGPT conversation")
+        response_thread = await message.create_thread(name="Synthbot reply", auto_archive_duration=1440, reason="ChatGPT conversation")
     elif isinstance(message.channel, discord.Thread) and message.channel.owner == client.user:
         # User replied to a thread we created
         response_thread = message.channel

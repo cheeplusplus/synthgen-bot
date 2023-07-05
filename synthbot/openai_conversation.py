@@ -57,8 +57,8 @@ class OpenaiConversation(object):
         return sum(int(v["tokens"]) for v in self.message_history)
 
     async def summarize(self):
-        summcc = OpenaiConversation(self.model, "Give a summary in eight words or less")
-        summcc.add_user_message(self.message_history[0]["content"])
+        summcc = OpenaiConversation("Give a summary in eight words or less")
+        summcc.add_user_message(self.message_history[0]["message"]["content"])
         return await summcc.get_response()
 
 
