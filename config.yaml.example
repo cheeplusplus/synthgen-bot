@@ -1,0 +1,7 @@
+---
+discord:
+  token: ABCD
+  doing: a stream of tokens
+
+openai:
+  api_key: QWERTY
