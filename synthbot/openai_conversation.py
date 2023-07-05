@@ -7,14 +7,15 @@ openai.api_key = bot_config["openai"]["api_key"]
 
 
 class OpenaiConversation(object):
-    message_history = []
-
     def __init__(self, system_message=None):
+        self.message_history = []
+        self.has_system_message = False
         self.model = "gpt-3.5-turbo-0613"
         self.token_limit = 4096
 
         if system_message:
             self.add("system", system_message)
+            self.has_system_message = True
 
     def add_user_message(self, content):
         if content == "-":
@@ -36,6 +37,8 @@ class OpenaiConversation(object):
     async def get_response(self):
         message_list = list(map(lambda x: x["message"], self.message_history))
 
+        print("Requesting response from ChatGPT with messages", repr(message_list))
+
         token_count = num_tokens_from_messages(message_list)
         while token_count > self.token_limit:
             message_list = message_list[1:]
@@ -56,10 +59,14 @@ class OpenaiConversation(object):
     def get_token_count(self):
         return sum(int(v["tokens"]) for v in self.message_history)
 
-    async def summarize(self):
-        summcc = OpenaiConversation("Give a summary in eight words or less")
-        summcc.add_user_message(self.message_history[0]["message"]["content"])
-        return await summcc.get_response()
+    def __repr__(self) -> str:
+        return repr(self.message_history)
+
+
+async def summarize(message: str):
+    summconvo = OpenaiConversation("Summarize the text of the following in 8 words or less")
+    summconvo.add_user_message(message)
+    return await summconvo.get_response()
 
 
 def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613"):

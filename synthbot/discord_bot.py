@@ -1,7 +1,7 @@
 import textwrap
 
 import discord
-from .openai_conversation import OpenaiConversation
+from .openai_conversation import OpenaiConversation, summarize
 
 
 intents = discord.Intents.default()
@@ -10,7 +10,7 @@ client = discord.Client(intents=intents)
 
 
 # Cache thread IDs to an OpenAI conversation
-THREAD_CONVO_CACHE: dict[str, OpenaiConversation] = {}
+THREAD_CONVO_CACHE: dict[int, OpenaiConversation] = {}
 
 
 @client.event
@@ -26,7 +26,7 @@ async def on_ready():
 
 
 @client.event
-async def on_message(message):
+async def on_message(message: discord.Message):
     if message.author == client.user or not message.content:
         return
 
@@ -46,27 +46,32 @@ async def on_message(message):
     async with response_thread.typing():
         # Build the OpenAI conversation
         convo = None
+        
+        # Clean up the incoming content
+        content = message.content.replace(client.user.mention, "").strip()
+
         if response_thread.id in THREAD_CONVO_CACHE:
             convo = THREAD_CONVO_CACHE[response_thread.id]
-            convo.add_user_message(message.clean_content)
+            convo.add_user_message(content)
         else:
-            convo = OpenaiConversation()
+            convo = OpenaiConversation("Keep answers under 2000 characters. Markdown is allowed.")
             if new_thread:
-                convo.add_user_message(message.clean_content)
+                convo.add_user_message(content)
             else:
                 await load_thread_conversation(convo, response_thread)
             THREAD_CONVO_CACHE[response_thread.id] = convo
 
+        if new_thread:
+            # Summarize the first post to use as a thread title
+            summary = await summarize(content)
+            await response_thread.edit(name=summary)
+
         # Fetch the OpenAI response
         resp = await convo.get_response()
 
-        if new_thread:
-            # Summarize the thread
-            summary = await convo.summarize()
-            await response_thread.edit(name=summary)
-
         # Trim response to fit in Discord's 2000 character limit. The convo still contains the whole message.
-        short_resp = textwrap.shorten(resp, width=2000, placeholder="...")
+        # short_resp = textwrap.shorten(resp, width=2000, placeholder="...") # this removes whitespace
+        short_resp = (resp[:1996] + "...") if len(resp) > 1999 else resp
 
         await response_thread.send(short_resp, allowed_mentions=discord.AllowedMentions.none())
     
