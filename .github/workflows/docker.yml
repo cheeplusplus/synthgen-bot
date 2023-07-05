@@ -1,0 +1,16 @@
+name: Docker
+
+on: [push]
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Docker container
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: docker.pkg.github.com/${{ github.repository }}/bot
+          registry: docker.pkg.github.com
+          username: ${{ github.repository }}
+          password: ${{ secrets.GITHUB_TOKEN }}

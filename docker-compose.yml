@@ -1,0 +1,5 @@
+services:
+  bot:
+    image: docker.pkg.github.com/cheeplusplus/synthgen-bot/bot
+    volumes:
+      - ./config.yaml:/home/synthbot/config.yaml
