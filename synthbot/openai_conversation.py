@@ -34,7 +34,7 @@ class OpenaiConversation(object):
             "tokens": num_tokens_from_messages([message])
         })
 
-    async def get_response(self):
+    async def get_response(self, max_tokens=500, temperature=1):
         message_list = list(map(lambda x: x["message"], self.message_history))
 
         print("Requesting response from ChatGPT with messages", repr(message_list))
@@ -46,7 +46,8 @@ class OpenaiConversation(object):
 
         completion = await openai.ChatCompletion.acreate(
             model=self.model,
-            max_tokens=512,
+            max_tokens=max_tokens,
+            temperature=temperature,
             messages=message_list
         )
         content = completion.choices[0].message.content
@@ -64,9 +65,9 @@ class OpenaiConversation(object):
 
 
 async def summarize(message: str):
-    summconvo = OpenaiConversation("Summarize the text of the following in 8 words or less")
+    summconvo = OpenaiConversation("Respond with a summary of the prompt in 8 words or less")
     summconvo.add_user_message(message)
-    return await summconvo.get_response()
+    return await summconvo.get_response(max_tokens=25, temperature=0.5)
 
 
 def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613"):
