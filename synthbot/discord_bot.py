@@ -1,5 +1,3 @@
-import textwrap
-
 import discord
 from .openai_conversation import OpenaiConversation, summarize
 
@@ -27,7 +25,12 @@ async def on_ready():
 
 @client.event
 async def on_message(message: discord.Message):
-    if message.author == client.user or not message.content:
+    if message.author == client.user or message.author.bot:
+        # It's either from ourselves or another bot, ignore it
+        return
+
+    if not message.content:
+        # Don't have permission to see it, or some other issue
         return
 
     new_thread = False
@@ -76,7 +79,7 @@ async def on_message(message: discord.Message):
         await response_thread.send(short_resp, allowed_mentions=discord.AllowedMentions.none())
     
 
-async def load_thread_conversation(convo, thread):
+async def load_thread_conversation(convo: OpenaiConversation, thread: discord.Thread):
     # This really needs to be some dynamic thing where we walk backwards to the max token limit
     async for message in thread.history(limit=100, oldest_first=True):
         if message.author == client.user:

@@ -7,7 +7,7 @@ openai.api_key = bot_config["openai"]["api_key"]
 
 
 class OpenaiConversation(object):
-    def __init__(self, system_message=None):
+    def __init__(self, system_message: str = None):
         self.message_history = []
         self.has_system_message = False
         self.model = "gpt-3.5-turbo-0613"
@@ -17,24 +17,24 @@ class OpenaiConversation(object):
             self.add("system", system_message)
             self.has_system_message = True
 
-    def add_user_message(self, content):
+    def add_user_message(self, content: str):
         if content == "-":
             # Ignore certain things in the GPT message history
             pass
 
         self.add("user", content)
 
-    def add_assistant_message(self, content):
+    def add_assistant_message(self, content: str):
         self.add("assistant", content)
 
-    def add(self, type, content):
+    def add(self, type: str, content: str):
         message = { "role": type, "content": content }
         self.message_history.append({
             "message": message,
             "tokens": num_tokens_from_messages([message])
         })
 
-    async def get_response(self, max_tokens=500, temperature=1):
+    async def get_response(self, max_tokens: int = 500, temperature: float = 1):
         message_list = list(map(lambda x: x["message"], self.message_history))
 
         print("Requesting response from ChatGPT with messages", repr(message_list))
@@ -54,7 +54,7 @@ class OpenaiConversation(object):
         self.add("assistant", content)
         return content
 
-    def calc_tokens_for_msg(self, content):
+    def calc_tokens_for_msg(self, content: str):
         return num_tokens_from_messages([content], self.model)
 
     def get_token_count(self):
