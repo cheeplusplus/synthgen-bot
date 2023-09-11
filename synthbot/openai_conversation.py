@@ -4,7 +4,7 @@ import tiktoken
 
 from .config import bot_config
 
-openai.api_key = bot_config["openai"]["api_key"]
+openai.api_key = bot_config.openai.api_key
 
 
 class OpenaiConversation(object):
