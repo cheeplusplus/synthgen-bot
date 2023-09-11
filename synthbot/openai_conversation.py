@@ -12,15 +12,13 @@ class OpenaiConversation(object):
 
     def __init__(
         self,
-        thread_name: str,
         system_message: str = None,
         system_continuation_message: str = None,
     ):
+        self.thread_name = None
         self.message_history = []
         self.model = "gpt-3.5-turbo-0613"
         self.token_limit = 4096
-
-        self.thread_name = thread_name
 
         if system_message:
             self.system_message = system_message
@@ -48,7 +46,7 @@ class OpenaiConversation(object):
         """Add a message to the message history."""
         self.message_history.append({"role": type, "content": content})
 
-    async def get_response(self, max_tokens: int = 500, temperature: float = 1):
+    async def get_response(self, max_tokens: int = 500, temperature: float = 1) -> str:
         """Get a GPT completion for the current message history."""
         # Pull the message object out of the message history (to drop token data)
         message_list = self.message_history.copy()

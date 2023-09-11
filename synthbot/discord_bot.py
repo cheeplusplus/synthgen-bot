@@ -1,4 +1,6 @@
 import discord
+
+from .scryfall import get_mtg_embeds_from_message
 from .openai_conversation import InvalidRequestError, OpenaiConversation, summarize
 
 
@@ -76,10 +78,10 @@ async def on_message(message: discord.Message):
             convo.add_user_message(content)
         else:
             convo = OpenaiConversation(
-                thread_name,
                 "You are talking to a friendly user. Keep your replies under 1800 characters. Markdown is allowed.",
                 'You are continuing a conversation in a thread called "THREAD_NAME". Keep your replies under 1800 characters. Markdown is allowed.',
             )
+            convo.update_thread_name(thread_name)
             if new_thread:
                 convo.add_user_message(content)
             else:
@@ -104,12 +106,17 @@ async def on_message(message: discord.Message):
 
             return
 
+        # Look up Magic cards
+        mtg_embeds = await get_mtg_embeds_from_message(resp)
+
         # Trim response to fit in Discord's 2000 character limit. The convo still contains the whole message.
         # short_resp = textwrap.shorten(resp, width=2000, placeholder="...") # this removes whitespace
         short_resp = (resp[:1996] + "...") if len(resp) > 1999 else resp
 
         await response_thread.send(
-            short_resp, allowed_mentions=discord.AllowedMentions.none()
+            short_resp,
+            allowed_mentions=discord.AllowedMentions.none(),
+            embeds=mtg_embeds,
         )
 
 

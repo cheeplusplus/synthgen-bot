@@ -8,6 +8,7 @@ openai = "*"
 "discord.py" = "*"
 tiktoken = "*"
 pyyaml = "*"
+cattrs = "*"
 
 [dev-packages]
 black = "*"
