@@ -17,9 +17,8 @@ async def on_ready():
     await client.change_presence(
         status=discord.Status.online,
         activity=discord.Activity(
-            type=discord.ActivityType.listening,
-            name="a stream of tokens"
-        )
+            type=discord.ActivityType.listening, name="a stream of tokens"
+        ),
     )
 
 
@@ -35,11 +34,20 @@ async def on_message(message: discord.Message):
 
     new_thread = False
     response_thread = None
-    if isinstance(message.channel, discord.TextChannel) and client.user.mentioned_in(message):
+    if isinstance(message.channel, discord.TextChannel) and client.user.mentioned_in(
+        message
+    ):
         # User mentioned us, create a thread with our reply
         new_thread = True
-        response_thread = await message.create_thread(name="Synthbot reply", auto_archive_duration=1440, reason="ChatGPT conversation")
-    elif isinstance(message.channel, discord.Thread) and message.channel.owner == client.user:
+        response_thread = await message.create_thread(
+            name="Synthbot reply",
+            auto_archive_duration=1440,
+            reason="ChatGPT conversation",
+        )
+    elif (
+        isinstance(message.channel, discord.Thread)
+        and message.channel.owner == client.user
+    ):
         # User replied to a thread we created
         response_thread = message.channel
     else:
@@ -49,7 +57,7 @@ async def on_message(message: discord.Message):
     async with response_thread.typing():
         # Build the OpenAI conversation
         convo = None
-        
+
         # Clean up the incoming content
         content = message.content.replace(client.user.mention, "").strip()
 
@@ -57,7 +65,9 @@ async def on_message(message: discord.Message):
             convo = THREAD_CONVO_CACHE[response_thread.id]
             convo.add_user_message(content)
         else:
-            convo = OpenaiConversation("Keep answers under 2000 characters. Markdown is allowed.")
+            convo = OpenaiConversation(
+                "Keep answers under 2000 characters. Markdown is allowed."
+            )
             if new_thread:
                 convo.add_user_message(content)
             else:
@@ -76,8 +86,10 @@ async def on_message(message: discord.Message):
         # short_resp = textwrap.shorten(resp, width=2000, placeholder="...") # this removes whitespace
         short_resp = (resp[:1996] + "...") if len(resp) > 1999 else resp
 
-        await response_thread.send(short_resp, allowed_mentions=discord.AllowedMentions.none())
-    
+        await response_thread.send(
+            short_resp, allowed_mentions=discord.AllowedMentions.none()
+        )
+
 
 async def load_thread_conversation(convo: OpenaiConversation, thread: discord.Thread):
     # This really needs to be some dynamic thing where we walk backwards to the max token limit

@@ -28,11 +28,10 @@ class OpenaiConversation(object):
         self.add("assistant", content)
 
     def add(self, type: str, content: str):
-        message = { "role": type, "content": content }
-        self.message_history.append({
-            "message": message,
-            "tokens": num_tokens_from_messages([message])
-        })
+        message = {"role": type, "content": content}
+        self.message_history.append(
+            {"message": message, "tokens": num_tokens_from_messages([message])}
+        )
 
     async def get_response(self, max_tokens: int = 500, temperature: float = 1):
         message_list = list(map(lambda x: x["message"], self.message_history))
@@ -48,7 +47,7 @@ class OpenaiConversation(object):
             model=self.model,
             max_tokens=max_tokens,
             temperature=temperature,
-            messages=message_list
+            messages=message_list,
         )
         content = completion.choices[0].message.content
         self.add("assistant", content)
@@ -65,7 +64,9 @@ class OpenaiConversation(object):
 
 
 async def summarize(message: str):
-    summconvo = OpenaiConversation("Respond with a summary of the prompt in 8 words or less")
+    summconvo = OpenaiConversation(
+        "Respond with a summary of the prompt in 8 words or less"
+    )
     summconvo.add_user_message(message)
     return await summconvo.get_response(max_tokens=25, temperature=0.5)
 
@@ -84,17 +85,23 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613"):
         "gpt-4-32k-0314",
         "gpt-4-0613",
         "gpt-4-32k-0613",
-        }:
+    }:
         tokens_per_message = 3
         tokens_per_name = 1
     elif model == "gpt-3.5-turbo-0301":
-        tokens_per_message = 4  # every message follows <|start|>{role/name}\n{content}<|end|>\n
+        tokens_per_message = (
+            4  # every message follows <|start|>{role/name}\n{content}<|end|>\n
+        )
         tokens_per_name = -1  # if there's a name, the role is omitted
     elif "gpt-3.5-turbo" in model:
-        print("Warning: gpt-3.5-turbo may update over time. Returning num tokens assuming gpt-3.5-turbo-0613.")
+        print(
+            "Warning: gpt-3.5-turbo may update over time. Returning num tokens assuming gpt-3.5-turbo-0613."
+        )
         return num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613")
     elif "gpt-4" in model:
-        print("Warning: gpt-4 may update over time. Returning num tokens assuming gpt-4-0613.")
+        print(
+            "Warning: gpt-4 may update over time. Returning num tokens assuming gpt-4-0613."
+        )
         return num_tokens_from_messages(messages, model="gpt-4-0613")
     else:
         raise NotImplementedError(
