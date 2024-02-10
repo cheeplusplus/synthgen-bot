@@ -1,4 +1,5 @@
 import discord
+import discordhealthcheck
 from openai import APIError
 
 from .config import bot_config
@@ -6,9 +7,15 @@ from .scryfall import get_mtg_embeds_from_message
 from .openai_conversation import OpenaiConversation, summarize
 
 
+class SynthbotClient(discord.Client):
+    async def setup_hook(self):
+        self.healthcheck_server = await discordhealthcheck.start(self)
+
+
 intents = discord.Intents.default()
 intents.message_content = True
-client = discord.Client(intents=intents)
+
+client = SynthbotClient(intents=intents)
 
 
 # Cache thread IDs to an OpenAI conversation

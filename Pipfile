@@ -10,6 +10,7 @@ tiktoken = "*"
 pyyaml = "*"
 cattrs = "*"
 typing-extensions = "*"
+discordhealthcheck = "*"
 
 [dev-packages]
 black = "*"

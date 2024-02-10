@@ -33,5 +33,8 @@ USER synthbot
 # Install application into container
 COPY synthbot/ synthbot/
 
+# Healthcheck
+HEALTHCHECK CMD discordhealthcheck || exit 1
+
 # Run the application
 CMD ["python", "-m", "synthbot"]
