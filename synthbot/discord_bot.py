@@ -1,8 +1,9 @@
 import discord
+from openai import APIError
 
 from .config import bot_config
 from .scryfall import get_mtg_embeds_from_message
-from .openai_conversation import InvalidRequestError, OpenaiConversation, summarize
+from .openai_conversation import OpenaiConversation, summarize
 
 
 intents = discord.Intents.default()
@@ -99,7 +100,7 @@ async def on_message(message: discord.Message):
         # Fetch the OpenAI response
         try:
             resp = await convo.get_response()
-        except InvalidRequestError as e:
+        except APIError as e:
             print("Got an error while trying to get a conversation response:", repr(e))
 
             try:

@@ -1,9 +1,10 @@
-import openai
+from openai import AsyncOpenAI
 import tiktoken
 
 from .config import bot_config
 
-openai.api_key = bot_config.openai.api_key
+
+openai_client = AsyncOpenAI(api_key=bot_config.openai.api_key)
 
 
 class OpenaiConversation(object):
@@ -78,7 +79,7 @@ class OpenaiConversation(object):
             f"The token count is {orig_token_count} down to {token_count} (TL: {token_limit} Max: {self.token_limit})"
         )
 
-        completion = await openai.ChatCompletion.acreate(
+        completion = await openai_client.chat.completions.create(
             model=self.model,
             max_tokens=max_tokens,
             temperature=temperature,
