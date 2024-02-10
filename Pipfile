@@ -9,6 +9,7 @@ openai = "*"
 tiktoken = "*"
 pyyaml = "*"
 cattrs = "*"
+typing-extensions = "*"
 
 [dev-packages]
 black = "*"
