@@ -1,5 +1,4 @@
 import openai
-from openai.error import InvalidRequestError
 import tiktoken
 
 from .config import bot_config
@@ -17,7 +16,7 @@ class OpenaiConversation(object):
     ):
         self.thread_name = None
         self.message_history = []
-        self.model = "gpt-3.5-turbo-0613"
+        self.model = "gpt-3.5-turbo"
         self.token_limit = 4096
 
         if system_message:
@@ -112,7 +111,7 @@ async def summarize(message: str):
     return await summconvo.get_response(max_tokens=25, temperature=0.5)
 
 
-def num_tokens_from_messages(messages: list[dict], model="gpt-3.5-turbo-0613"):
+def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613"):
     """Return the number of tokens used by a list of messages."""
     try:
         encoding = tiktoken.encoding_for_model(model)
