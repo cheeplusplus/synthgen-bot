@@ -13,6 +13,7 @@ class DiscordConfig:
 @define
 class OpenAIConfig:
     api_key: str
+    model: str
 
 
 @define

@@ -3,6 +3,17 @@ import tiktoken
 
 from .config import bot_config
 
+# GPT models we want to support, values are their input token limits.
+AVAILABLE_MODELS: dict[str, int] = {
+    "gpt-3.5-turbo": 16385,  # currently 0125
+    "gpt-3.5-turbo-0125": 16385,
+    "gpt-3.5-turbo-1106": 16385,
+    "gpt-4-turbo": 128000,  # currently 2024-04-09
+    "gpt-4-turbo-2024-04-09": 128000,
+    "gpt-4-0125-preview": 128000,
+    "gpt-4-1106-preview": 128000,
+}
+
 
 openai_client = AsyncOpenAI(api_key=bot_config.openai.api_key)
 
@@ -16,9 +27,9 @@ class OpenaiConversation(object):
         system_continuation_message: str = None,
     ):
         self.thread_name = None
-        self.message_history = []
-        self.model = "gpt-3.5-turbo"
-        self.token_limit = 4096
+        self.message_history: list[dict[str, str]] = []
+        self.model = bot_config.openai.model
+        self.token_limit = AVAILABLE_MODELS[self.model]
 
         if system_message:
             self.system_message = system_message
@@ -92,7 +103,7 @@ class OpenaiConversation(object):
 
         return content
 
-    def calc_tokens_for_msg(self, content: list[dict]):
+    def calc_tokens_for_msg(self, content: list[dict[str, str]]):
         """Calculate the number of tokens for a message."""
         return num_tokens_from_messages(content, self.model)
 
@@ -112,38 +123,16 @@ async def summarize(message: str):
     return await summconvo.get_response(max_tokens=25, temperature=0.5)
 
 
-def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613"):
+def num_tokens_from_messages(messages: list[dict[str, str]], model):
     """Return the number of tokens used by a list of messages."""
     try:
         encoding = tiktoken.encoding_for_model(model)
     except KeyError:
         print("Warning: model not found. Using cl100k_base encoding.")
         encoding = tiktoken.get_encoding("cl100k_base")
-    if model in {
-        "gpt-3.5-turbo-0613",
-        "gpt-3.5-turbo-16k-0613",
-        "gpt-4-0314",
-        "gpt-4-32k-0314",
-        "gpt-4-0613",
-        "gpt-4-32k-0613",
-    }:
+    if model in AVAILABLE_MODELS:
         tokens_per_message = 3
         tokens_per_name = 1
-    elif model == "gpt-3.5-turbo-0301":
-        tokens_per_message = (
-            4  # every message follows <|start|>{role/name}\n{content}<|end|>\n
-        )
-        tokens_per_name = -1  # if there's a name, the role is omitted
-    elif "gpt-3.5-turbo" in model:
-        print(
-            "Warning: gpt-3.5-turbo may update over time. Returning num tokens assuming gpt-3.5-turbo-0613."
-        )
-        return num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613")
-    elif "gpt-4" in model:
-        print(
-            "Warning: gpt-4 may update over time. Returning num tokens assuming gpt-4-0613."
-        )
-        return num_tokens_from_messages(messages, model="gpt-4-0613")
     else:
         raise NotImplementedError(
             f"""num_tokens_from_messages() is not implemented for model {model}. See https://github.com/openai/openai-python/blob/main/chatml.md for information on how messages are converted to tokens."""
