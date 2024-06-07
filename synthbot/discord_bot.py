@@ -85,7 +85,7 @@ async def on_message(message: discord.Message):
         if new_thread:
             # Summarize the first post to use as a thread title
             summary = await summarize(content)
-            await response_thread.edit(name=summary)
+            await response_thread.edit(name=summary[:100])
             thread_name = summary
 
         if response_thread.id in THREAD_CONVO_CACHE:
