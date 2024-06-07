@@ -2,7 +2,11 @@ from typing import Optional
 from discord import Embed
 import re
 import requests
+import logging
+
 from .scryfall_types import ScryfallCard
+
+logger = logging.getLogger(__name__)
 
 # Keep a cache of cards fetched just to be safe
 CARD_CACHE: dict[str, ScryfallCard] = {}
@@ -43,7 +47,7 @@ async def get_mtg_embed_for_card_name(card_name: str) -> Optional[Embed]:
         try:
             card = await get_card_by_fuzzy_match(card_name)
         except requests.exceptions.HTTPError as e:
-            print(f"Got error while looking up [[{card_name}]]:", repr(e))
+            logger.exception("Got error while looking up [[%s]]", card_name)
             return None
 
         # Cache both the fuzzy name and the real name
@@ -70,7 +74,7 @@ async def get_mtg_embed_for_card_name(card_name: str) -> Optional[Embed]:
 
 
 async def get_card_by_fuzzy_match(card_name: str) -> ScryfallCard:
-    print(f"Looking up on Scryfall for a card named [[{card_name}]]")
+    logger.debug("Looking up on Scryfall for a card named [[%s]]", card_name)
 
     req = requests.get(
         "https://api.scryfall.com/cards/named", params={"fuzzy": card_name}

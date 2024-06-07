@@ -1,5 +1,6 @@
 from openai import AsyncOpenAI
 import tiktoken
+import logging
 
 from .config import bot_config
 
@@ -15,6 +16,7 @@ AVAILABLE_MODELS: dict[str, int] = {
 }
 
 
+logger = logging.getLogger(__name__)
 openai_client = AsyncOpenAI(api_key=bot_config.openai.api_key)
 
 
@@ -85,9 +87,13 @@ class OpenaiConversation(object):
             # Recalculate the new token limit
             token_count = self.calc_tokens_for_msg(message_list)
 
-        print("Requesting response from ChatGPT with messages", repr(message_list))
-        print(
-            f"The token count is {orig_token_count} down to {token_count} (TL: {token_limit} Max: {self.token_limit})"
+        logger.debug("Requesting response from ChatGPT with messages: %s", message_list)
+        logger.debug(
+            "The token count is %d down to %d (TL: %d Max: %d)",
+            orig_token_count,
+            token_count,
+            token_limit,
+            self.token_limit,
         )
 
         completion = await openai_client.chat.completions.create(
@@ -97,7 +103,7 @@ class OpenaiConversation(object):
             messages=message_list,
         )
 
-        print("Got response from ChatGPT", repr(completion))
+        logger.debug("Got response from ChatGPT: %s", completion)
         content = completion.choices[0].message.content
         self.add("assistant", content)
 
@@ -128,7 +134,7 @@ def num_tokens_from_messages(messages: list[dict[str, str]], model):
     try:
         encoding = tiktoken.encoding_for_model(model)
     except KeyError:
-        print("Warning: model not found. Using cl100k_base encoding.")
+        logger.error("Warning: model not found. Using cl100k_base encoding.")
         encoding = tiktoken.get_encoding("cl100k_base")
     if model in AVAILABLE_MODELS:
         tokens_per_message = 3

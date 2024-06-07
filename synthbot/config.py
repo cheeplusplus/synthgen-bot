@@ -4,6 +4,11 @@ import yaml
 
 
 @define
+class BotConfig:
+    debug: bool = field(default=False)
+
+
+@define
 class DiscordConfig:
     token: str
     doing: str
@@ -25,6 +30,7 @@ class ScryfallConfig:
 class SynthbotConfig:
     discord: DiscordConfig
     openai: OpenAIConfig
+    bot: BotConfig = field(default=BotConfig())
     scryfall: ScryfallConfig = field(default=ScryfallConfig())
 
 
