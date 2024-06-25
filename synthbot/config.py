@@ -1,6 +1,7 @@
 from attrs import define, field
 import cattrs
 import yaml
+from typing import Optional
 
 
 @define
@@ -12,7 +13,8 @@ class BotConfig:
 class DiscordConfig:
     token: str
     doing: str
-    allowed_channels: list[int] = field(default=None)
+    allowed_channels: Optional[list[int]] = field(default=None)
+    admin_users: Optional[list[int]] = field(default=None)
 
 
 @define

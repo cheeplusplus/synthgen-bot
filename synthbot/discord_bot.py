@@ -49,7 +49,18 @@ async def on_message(message: discord.Message):
 
     new_thread = False
     response_thread = None
-    if isinstance(message.channel, discord.TextChannel) and client.user.mentioned_in(
+    if not message.guild:
+        # DM
+        logger.debug("Got direct message from %s: %s", message.author, message.content)
+
+        if not bot_config.discord.admin_users or message.author.id not in bot_config.discord.admin_users:
+            await message.channel.send("Hello! I am Synthgen GPT, your friendly robot friend.")
+            return
+
+        await message.channel.send("Hello! I am Synthgen GPT, your personal synth assistant.")
+        return
+
+    elif isinstance(message.channel, discord.TextChannel) and client.user.mentioned_in(
         message
     ):
         if (
