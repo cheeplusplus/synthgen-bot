@@ -13,6 +13,7 @@ class BotConfig:
 class DiscordConfig:
     token: str
     doing: str
+    default_thread_title: Optional[str] = field(default="Synthbot reply")
     allowed_channels: Optional[list[int]] = field(default=None)
     admin_users: Optional[list[int]] = field(default=None)
 
@@ -20,7 +21,9 @@ class DiscordConfig:
 @define
 class OpenAIConfig:
     api_key: str
-    model: str
+    model: Optional[str] = field(default="gpt-3.5-turbo")
+    thread_token_limit: Optional[int] = field(default=None)
+    reply_token_limit: Optional[int] = field(default=512)
 
 
 @define
