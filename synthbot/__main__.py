@@ -16,10 +16,9 @@ def setup_logger():
     logger.addHandler(handler)
 
     if "--debug" in sys.argv or bot_config.bot.debug:
-        # Is there a better way to do this???
-        logging.getLogger("synthbot.discord_bot").setLevel(logging.DEBUG)
-        logging.getLogger("synthbot.openai_conversation").setLevel(logging.DEBUG)
-        logging.getLogger("synthbot.scryfall").setLevel(logging.DEBUG)
+        for key in logging.Logger.manager.loggerDict:
+            if key.startswith("synthbot"):
+                logging.getLogger(key).setLevel(logging.DEBUG)
 
 
 setup_logger()

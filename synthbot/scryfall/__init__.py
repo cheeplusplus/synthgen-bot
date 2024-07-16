@@ -4,7 +4,7 @@ import re
 import requests
 import logging
 
-from .scryfall_types import ScryfallCard
+from .types import ScryfallCard
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ async def get_mtg_embeds_from_message(message: str) -> Optional[list[Embed]]:
     if not message:
         return None
 
-    matches = re.findall("\[\[([^\[]+)\]\]", message)
+    matches = re.findall(r"\[\[([^[]+)\]\]", message)
     if len(matches) < 1:
         return None
 
