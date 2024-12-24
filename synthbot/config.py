@@ -21,7 +21,7 @@ class DiscordConfig:
 @define
 class OpenAIConfig:
     api_key: str
-    model: Optional[str] = field(default="gpt-3.5-turbo")
+    model: Optional[str] = field(default="gpt-4o")
     thread_token_limit: Optional[int] = field(default=None)
     reply_token_limit: Optional[int] = field(default=512)
 

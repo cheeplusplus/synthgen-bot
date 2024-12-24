@@ -8,11 +8,12 @@ from .config import bot_config
 AVAILABLE_MODELS: dict[str, int] = {
     "gpt-3.5-turbo": 16385,  # currently 0125
     "gpt-3.5-turbo-0125": 16385,
-    "gpt-3.5-turbo-1106": 16385,
     "gpt-4-turbo": 128000,  # currently 2024-04-09
     "gpt-4-turbo-2024-04-09": 128000,
-    "gpt-4-0125-preview": 128000,
-    "gpt-4-1106-preview": 128000,
+    "gpt-4o": 128000, # currently gpt-4o-2024-08-06
+    "gpt-4o-2024-08-06": 128000,
+    "gpt-4o-mini": 128000, # currently gpt-4o-mini-2024-07-18
+    "gpt-4o-mini-2024-07-18": 128000,
 }
 
 
