@@ -6,15 +6,28 @@ from .config import bot_config
 
 # GPT models we want to support, values are their input token limits.
 AVAILABLE_MODELS: dict[str, int] = {
-    "gpt-3.5-turbo": 16385,  # currently 0125
     "gpt-3.5-turbo-0125": 16385,
-    "gpt-4-turbo": 128000,  # currently 2024-04-09
     "gpt-4-turbo-2024-04-09": 128000,
-    "gpt-4o": 128000, # currently gpt-4o-2024-08-06
     "gpt-4o-2024-08-06": 128000,
-    "gpt-4o-mini": 128000, # currently gpt-4o-mini-2024-07-18
     "gpt-4o-mini-2024-07-18": 128000,
+    "chatgpt-4o-latest": 128000,
+    "gpt-4.1-2025-04-14": 1047576,
+    "gpt-4.1-mini-2025-04-14": 1047576,
+    "gpt-4.1-nano-2025-04-14": 1047576,
 }
+
+# Model aliases
+AVAILABLE_MODELS.update(
+    {
+        "gpt-3.5-turbo": AVAILABLE_MODELS["gpt-3.5-turbo-0125"],
+        "gpt-4-turbo": AVAILABLE_MODELS["gpt-4-turbo-2024-04-09"],
+        "gpt-4o": AVAILABLE_MODELS["gpt-4o-2024-08-06"],
+        "gpt-4o-mini": AVAILABLE_MODELS["gpt-4o-mini-2024-07-18"],
+        "gpt-4.1": AVAILABLE_MODELS["gpt-4.1-2025-04-14"],
+        "gpt-4.1-mini": AVAILABLE_MODELS["gpt-4.1-mini-2025-04-14"],
+        "gpt-4.1-nano": AVAILABLE_MODELS["gpt-4.1-nano-2025-04-14"],
+    }
+)
 
 
 logger = logging.getLogger(__name__)
