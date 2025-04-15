@@ -60,7 +60,7 @@ class ChatThread:
             [
                 {
                     "role": "system",
-                    "content": "Respond with a summary of the prompt in 8 words or less",
+                    "content": bot_config.openai.summarize_prompt,
                 },
                 {"role": "user", "content": self.messages[0].message_text},
             ],

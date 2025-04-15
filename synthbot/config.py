@@ -22,6 +22,7 @@ class DiscordConfig:
 class OpenAIConfig:
     api_key: str
     model: Optional[str] = field(default="gpt-4o")
+    summarize_prompt: Optional[str] = field(default="Give a short summary in 8 words or less. Rephrase the prompt only.")
     thread_token_limit: Optional[int] = field(default=None)
     reply_token_limit: Optional[int] = field(default=512)
 
