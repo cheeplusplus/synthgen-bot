@@ -80,9 +80,9 @@ class ChatThread:
         )
 
     def get_messages_under_token_limit(
-        self, gpt_convo: GptConversation, token_limit=500
+        self, gpt_convo: GptConversation, token_limit=None
     ) -> Generator[dict[str, str], None, str]:
-        use_token_limit = min(token_limit, gpt_convo.token_limit)
+        use_token_limit = min(token_limit, gpt_convo.token_limit) if token_limit and token_limit > 0 else gpt_convo.token_limit
         token_count = 0
 
         for outbound_message in reversed(self.get_messages()):
@@ -95,7 +95,7 @@ class ChatThread:
                 # We don't have enough tokens to replay the entire conversation
                 return "token_overflow"
 
-    async def continue_thread(self, token_limit=500) -> str:
+    async def continue_thread(self, token_limit=None) -> str:
         await self.summarize()  # Ensure we've summarized the thread so the continuation has a value
 
         gpt_convo = GptConversation()
