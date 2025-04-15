@@ -55,7 +55,7 @@ class ChatThread:
             return self.summary
 
         """Summarize a message into something shorter."""
-        summconvo = GptConversation()
+        summconvo = GptConversation(bot_config.openai.summarize_model)
         summresp = await summconvo.get_response(
             [
                 {
